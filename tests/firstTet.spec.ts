@@ -15,3 +15,13 @@ test.describe('Validade homepage', () => {
     await page.getByText('Auth').click();
   });
 });
+
+test.describe('Clicking test', () => {
+  test('Click the sidebar text', async ({ page }) => {
+    await page.getByRole('link', { name: 'Dialog' }).click();
+    await page.getByRole('link', { name: 'Window' }).click();
+    await page.getByRole('link', { name: 'Popover' }).click();
+    await page.getByRole('button', { name: 'Right' }).click();
+    await page.getByRole('button', { name: 'With form' }).first().click();
+  });
+});
