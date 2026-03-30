@@ -101,5 +101,24 @@ test('tooltip testing', async ({ page }) => {
   await topButton.hover();
 
   const tooltipText = page.locator('nb-tooltip').textContent();
-  expect(await tooltipText).toBe('This is a tooltip');
+  expect(await tooltipText).toEqual('This is a tooltip');
+});
+
+test('Alert and dialog', async ({ page }) => {
+  await page.getByText('Tables & Data').click();
+  await page.getByText('Smart Table').click();
+
+  //Clicks the Delete Icon for mdo@gmail.com user
+  page.on('dialog', (dialog) => {
+    expect(dialog.message()).toEqual('Are you sure you want to delete?');
+    dialog.accept();
+  });
+
+  await page
+    .getByRole('table')
+    .locator('tr', { hasText: 'mdo@gmail.com' })
+    .locator('.nb-trash')
+    .click();
+
+  expect(page.locator('table')).not.toHaveText('mdo@gmail.com');
 });
