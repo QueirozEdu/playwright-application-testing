@@ -139,3 +139,26 @@ test('Change the age', async ({ page }) => {
     await targetRow.locator('.ng-star-inserted').nth(20).textContent(),
   ).toEqual('25');
 });
+
+//Edit row by selecting user ID
+test('Edit row by user id', async ({ page }) => {
+  await page.getByText('Tables & Data').click();
+  await page.getByText('Smart Table').click();
+
+  await page.locator('ng2-smart-table-pager').getByText('2').click();
+
+  const targetRowById = page
+    .getByRole('row', { name: '11' })
+    .filter({ has: page.locator('td').nth(1).getByText('11') });
+
+  await targetRowById.locator('.nb-edit').click();
+
+  await page.locator('input-editor').getByPlaceholder('E-mail').clear;
+  await page
+    .locator('input-editor')
+    .getByPlaceholder('E-mail')
+    .fill('new@email.com');
+
+  await page.locator('.nb-checkmark').click();
+  expect(await targetRowById.locator('td').nth(5)).toHaveText('new@email.com');
+});
