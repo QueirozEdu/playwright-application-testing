@@ -122,3 +122,20 @@ test('Alert and dialog', async ({ page }) => {
 
   expect(page.locator('table')).not.toHaveText('mdo@gmail.com');
 });
+
+//When editing a row, the field type is changed and this tests consists in dealing with that to update the age
+test('Change the age', async ({ page }) => {
+  await page.getByText('Tables & Data').click();
+  await page.getByText('Smart Table').click();
+
+  const targetRow = page.getByRole('row', { name: 'twitter@outlook.com' });
+  await targetRow.locator('.nb-edit').click();
+
+  await targetRow.getByPlaceholder('Age').clear();
+  await targetRow.getByPlaceholder('Age').fill('25');
+  await targetRow.locator('.nb-checkmark').click();
+
+  expect(
+    await targetRow.locator('.ng-star-inserted').nth(20).textContent(),
+  ).toEqual('25');
+});
