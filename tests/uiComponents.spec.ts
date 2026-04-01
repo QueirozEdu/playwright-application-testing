@@ -1,6 +1,4 @@
 import { test, expect } from '@playwright/test';
-import { assert } from 'console';
-import { delay } from 'rxjs-compat/operator/delay';
 
 test.beforeEach(async ({ page }) => {
   await page.goto('http://localhost:4200');
@@ -161,4 +159,85 @@ test('Edit row by user id', async ({ page }) => {
 
   await page.locator('.nb-checkmark').click();
   expect(await targetRowById.locator('td').nth(5)).toHaveText('new@email.com');
+});
+
+//loop through ages and verify they exist or not
+test('Loop through ages', async ({ page }) => {
+  await page.getByText('Tables & Data').click();
+  await page.getByText('Smart Table').click();
+
+  const ages = ['20', '30', '40', '200'];
+
+  for (let age of ages) {
+    await page.locator('input-filter').getByPlaceholder('Age').clear();
+    await page.locator('input-filter').getByPlaceholder('Age').fill(age);
+    await page.waitForTimeout(400);
+    const ageRows = page.locator('tbody tr');
+
+    for (let row of await ageRows.all()) {
+      const cellValue = await row.locator('td').last().textContent();
+
+      if (age == '200') {
+        expect(await page.getByRole('table').textContent()).toContain(
+          'No data found',
+        );
+      } else {
+        expect(cellValue).toEqual(age);
+      }
+    }
+  }
+});
+
+test('Datepicker', async ({ page }) => {
+  await page.getByText('Forms').click();
+  await page.getByText('Datepicker').click();
+
+  const commonDatepicker = page.getByPlaceholder('Form Picker');
+  const daysInTheFuture = 500;
+
+  await commonDatepicker.click();
+
+  let date = new Date();
+  date.setDate(date.getDate() + daysInTheFuture);
+
+  //Creates the string in the correct format
+  const expectedDate = date.getDate().toString();
+  const expectedMonth = date.toLocaleString('EN-US', { month: 'short' });
+  const expectedYear = date.getFullYear();
+  const dateToAssert = `${expectedMonth} ${expectedDate}, ${expectedYear}`;
+
+  //Handles dates that are not in the current month
+  let calendarMonthAndYear = await page
+    .locator('nb-calendar-view-mode')
+    .textContent();
+  const expectedMonthLong = date.toLocaleString('EN-US', { month: 'long' });
+  const expectedMonthAndYear = ` ${expectedMonthLong} ${expectedYear}`;
+  while (!calendarMonthAndYear.includes(expectedMonthAndYear)) {
+    await page
+      .locator('nb-calendar-pageable-navigation [data-name="chevron-right"]')
+      .click();
+    calendarMonthAndYear = await page
+      .locator('nb-calendar-view-mode')
+      .textContent();
+  }
+
+  await page
+    .locator('[class="day-cell ng-star-inserted"]')
+    .getByText(expectedDate, { exact: true })
+    .click();
+
+  await expect(commonDatepicker).toHaveValue(dateToAssert);
+});
+
+test('Sliders', async ({ page }) => {
+  //Update attribute
+  const tempGauge = page.locator(
+    '[tabtitle="Temperature"] ngx-temperature-dragger circle',
+  );
+  await tempGauge.evaluate((node) => {
+    node.setAttribute('cx', '232.530');
+    node.setAttribute('cy', '232.530');
+  });
+
+  await tempGauge.click();
 });
