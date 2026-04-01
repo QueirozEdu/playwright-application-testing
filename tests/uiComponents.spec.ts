@@ -239,4 +239,26 @@ test('Sliders', async ({ page }) => {
     node.setAttribute('cy', '232.530');
   });
   await tempGauge.click();
+
+  //Mouse movement
+  const tempBox = page.locator(
+    '[tabtitle="Temperature"] ngx-temperature-dragger',
+  );
+  await tempBox.scrollIntoViewIfNeeded();
+
+  //gets the bounding box for the temp gauge
+  const box = await tempBox.boundingBox();
+
+  //calculates the center of the bounding box
+  const x = box.x + box.width / 2;
+  const y = box.y + box.height / 2;
+
+  //moves the mouse to the right
+  await page.mouse.move(x, y);
+  await page.mouse.down();
+  await page.mouse.move(x + 100, y);
+  await page.mouse.move(x + 100, y + 100);
+  await page.mouse.up();
+
+  await expect(tempBox).toContainText('30');
 });
