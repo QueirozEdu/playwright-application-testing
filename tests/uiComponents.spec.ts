@@ -193,7 +193,7 @@ test('Datepicker', async ({ page }) => {
   await page.getByText('Datepicker').click();
 
   const commonDatepicker = page.getByPlaceholder('Form Picker');
-  const daysInTheFuture = 500;
+  const daysInTheFuture = 50;
 
   await commonDatepicker.click();
 
@@ -238,6 +238,5 @@ test('Sliders', async ({ page }) => {
     node.setAttribute('cx', '232.530');
     node.setAttribute('cy', '232.530');
   });
-
   await tempGauge.click();
 });
