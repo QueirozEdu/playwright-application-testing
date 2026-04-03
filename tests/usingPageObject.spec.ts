@@ -1,30 +1,28 @@
-import { DatepickerPage } from '../page-object/datePickerPage';
-import { FormLayoutsPage } from '../page-object/formLayoutsPage';
-import { NavigationPage } from './../page-object/NavigationPage';
-import { test, expect } from '@playwright/test';
+import { test } from '@playwright/test';
+import { PageManager } from '../page-object/pageManager';
 
 test.beforeEach(async ({ page }) => {
   await page.goto('http://localhost:4200');
 });
 
 test('navigate to form page', async ({ page }) => {
-  const navigateTo = new NavigationPage(page);
-  await navigateTo.formLayoutPage();
-  await navigateTo.datePickerPage();
-  await navigateTo.smartTablePage();
-  await navigateTo.toastrPage();
-  await navigateTo.toastrPage();
+  const pm = new PageManager(page);
+  await pm.navigateTo().formLayoutPage();
+  await pm.navigateTo().datePickerPage();
+  await pm.navigateTo().smartTablePage();
+  await pm.navigateTo().toastrPage();
+  await pm.navigateTo().toastrPage();
 });
 
 test('parametrized methods', async ({ page }) => {
-  const navigateTo = new NavigationPage(page);
-  const onFormLayoutPage = new FormLayoutsPage(page);
-  const onDatepickerPage = new DatepickerPage(page);
+  const pm = new PageManager(page);
 
-  await navigateTo.formLayoutPage();
-  await onFormLayoutPage.submitUsingTheGridFormWithCredentialsAndSelectOption('test@test.com', 'testtest', 'Option 1');
-  await onFormLayoutPage.submitInlineFormWithNameEmailAndCheckbox('John Smith', 'john@test.com', false);
-  await navigateTo.datePickerPage();
-  await onDatepickerPage.selectCommonDatepickerDateFromToday(30);
-  await onDatepickerPage.selectDateWhitinRageStartingToday(6, 14);
+  await pm.navigateTo().formLayoutPage();
+  await pm
+    .onFormLayoutPage()
+    .submitUsingTheGridFormWithCredentialsAndSelectOption('test@test.com', 'testtest', 'Option 1');
+  await pm.onFormLayoutPage().submitInlineFormWithNameEmailAndCheckbox('John Smith', 'john@test.com', false);
+  await pm.navigateTo().datePickerPage();
+  await pm.onDatepickerPage().selectCommonDatepickerDateFromToday(30);
+  await pm.onDatepickerPage().selectDateWhitinRageStartingToday(6, 14);
 });
